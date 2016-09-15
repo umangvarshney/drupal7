@@ -1,0 +1,15 @@
+name = Nature
+description = Nature responsive theme
+version = VERSION
+core = 7.x
+stylesheets[all][] = css/screen.css
+stylesheets[all][] = css/material.min.css
+stylesheets[all][] = css/global/header.css
+
+scripts[] = js/material.min.js
+
+; Information added by Drupal.org packaging script on 2016-07-07
+version = "1.0"
+project = "drupal"
+datestamp = "1467918493"
+
