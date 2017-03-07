@@ -1,14 +1,19 @@
 /*** Screen Related css ****/
 /* line 3, ../sass/screen.scss */
-.container {
-  width: 1200px;
-  margin-left: 0;
-  margin-right: 0;
-  padding-left: 15px;
-  padding-right: 15px;
+body {
+  background: url("/sites/all/themes/nature/images/background/b17.png");
 }
 
-/* line 10, ../sass/screen.scss */
-body {
-  background: #dedede;
+/* line 7, ../sass/screen.scss */
+.container {
+  width: 1200px;
+  margin: 0px auto;
+  padding: 0;
+  height: auto;
+  display: block;
+}
+
+/* line 14, ../sass/screen.scss */
+#page-back {
+  background: #fff;
 }

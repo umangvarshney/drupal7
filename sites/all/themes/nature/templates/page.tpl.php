@@ -86,10 +86,9 @@
  */
 ?>
 
-<div id="page-wrapper"><div id="page">
-<div class="container">
-<div class="page-back">
-  <div id="header" class="<?php print $secondary_menu ? 'with-secondary-menu': 'without-secondary-menu'; ?>"><div class="section clearfix">
+<div id="page-wrapper">
+<div id="page">
+  <div id="header"><div class="section clearfix">
 
     <?php if ($logo): ?>
       <a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" rel="home" id="logo">
@@ -174,7 +173,7 @@
   <?php endif; ?>
 
   <div id="main-wrapper" class="clearfix"><div id="main" class="clearfix">
-
+<div class="container">
     <?php if ($breadcrumb): ?>
       <div id="breadcrumb"><?php print $breadcrumb; ?></div>
     <?php endif; ?>
@@ -216,7 +215,7 @@
         <?php print render($page['sidebar_second']); ?>
       </div></div> <!-- /.section, /#sidebar-second -->
     <?php endif; ?>
-
+</div>
   </div></div> <!-- /#main, /#main-wrapper -->
 
   <?php if ($page['triptych_first'] || $page['triptych_middle'] || $page['triptych_last']): ?>
@@ -245,7 +244,5 @@
     <?php endif; ?>
 
   </div></div> <!-- /.section, /#footer-wrapper -->
-  </div>
-</div>
 </div></div> <!-- /#page, /#page-wrapper -->
 

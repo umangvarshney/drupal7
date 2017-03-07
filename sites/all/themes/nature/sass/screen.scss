@@ -1,12 +1,14 @@
 /*** Screen Related css ****/
 
+body {
+	background: url('/sites/all/themes/nature/images/background/b17.png');
+}
+
 .container {
 	width: 1200px;
-	margin-left: 0;
-	margin-right: 0;
-	padding-left: 15px;
-	padding-right: 15px;
+	margin: 0px auto;
+	padding: 0;
+	height: auto;
+	display: block;
 }
-body {
-	background: #dedede;
-}
+

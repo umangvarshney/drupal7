@@ -1,0 +1,4 @@
+name=Apache Solr
+description= Custom data create / delete / update index on apache solr core
+core=7.x
+package= Custom

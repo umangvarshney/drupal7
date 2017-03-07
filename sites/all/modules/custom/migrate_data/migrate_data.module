@@ -1,0 +1,24 @@
+<?php
+
+/**
+ *  Use hook_menu()
+ */
+function migrate_data_menu() {
+	$items = array();
+	$items['merge/userdata'] = array(
+			'title' => 'User Data',
+			'page callback' => 'migrate_user_data',
+			'access arguments' => array('access content'),
+			'type' => MENU_CALLBACK,
+			);
+	return $items;
+}
+
+/***
+ * @copyright Test
+ * @author Umang
+ * Function for migration of data into database
+ */
+function migrate_user_data() {
+	
+}
