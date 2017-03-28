@@ -52,38 +52,75 @@ function index_submit($form,&$form_state) {
 	}
 }
 function create(){
-	$solr = new Apache_Solr_Service('localhost',8984,'/solr');
-	//print_r($solr);
+	$options = array
+	(
+			'hostname' => HOST,
+			'port'     => PORT,
+			'path'	   =>'/solr/core1'	
+	);
+	
+	$client = new SolrClient($options);
+	
+	$doc = new SolrInputDocument();
+	
+	$doc->addField('id', uniqid());
+	$doc->addField('fname', 'shilkiya');
+	
+	$updateResponse = $client->addDocument($doc);
+	
+	// you will have to commit changes to be written if you didn't use $commitWithin
+	$client->commit();
+	
+	print_r($updateResponse->getResponse());
+	
+	
+	/* $solr = new Apache_Solr_Service(HOST,PORT,'/solr/core0');
+	//print_r($solr);exit();
 	if(!$solr->ping()){
 		drupal_set_message('Server not connected');
 	}
+	else{
+		drupal_set_message('Server connected');
+	}
 	$documents = array();
 	$document = new Apache_Solr_Document();
-	try{
-	$query = db_query("select * from {user_data}");
-	foreach ($query as $result){
+	$document->fname = "Umang";
+	$solr->addDocument($document);
+	$solr->commit(true); */
+	//$solr->optimize();
+	//try{
+	//$query = db_query("select * from {user_data}");
+	//print_r($query);exit();
+	/*foreach ($query as $result){
 		$document->id = uniqid();
 		$document->fname = $result->first_name;
-		$document->lname = $result->last_name;
+		//$document->lname = $result->last_name;
 		$document->email = $result->email;
 		$document->city  = $result->city;
-		$document->company=$result->company_name;
-		$document->country=$result->country;
-		$document->state = $result->state;
+		//$document->company=$result->company_name;
+		//$document->country=$result->country;
+		//$document->state = $result->state;
 		$document->zip   = $result->zip;
-		$document->text  = $result->address;
-		$document->text  = $result->phone1;
-		$document->text  = $result->phone2;
-		$documents[] = $document;
-	}
-	$solr->addDocuments($documents);
-	$solr->commit();
-	$solr->optimize();
+		//$document->text  = $result->address;
+		//$document->text  = $result->phone1;
+		//$document->text  = $result->phone2;
+		//print_r($document);exit();
+		 //print_r($solr);exit();
+		$solr->addDocument($document);
+		$solr->commit();
+		$solr->optimize();
+		exit();
+		//$documents[] = $document;
+	}//exit();
+		//print_r($documents);exit();
+	//$solr->addDocuments($documents);
+	//$solr->commit();
+	//$solr->optimize();
 	drupal_set_message("Create Index successfully");
 	}
 	catch (Exception $e) {
 		drupal_set_message($e->getMessage(),'error');
-	}
+	}*/
 }
 
 function update(){
