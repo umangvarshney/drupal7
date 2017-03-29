@@ -24,6 +24,19 @@ function apache_solr_menu() {
 			'page arguments'=>array('index'),
 			'access arguments'=>array('access administration pages')
 	);
+	$item['solr/search'] = array(
+			'title'=>t('Solr Search'),
+			'description'=>t('Solr Searching'),
+			'page callback'=>'drupal_get_form',
+			'page arguments'=>array('search'),
+			'access arguments'=>array('access content')
+	);
+	
+	$item['solr/callback/autocomplete'] = array(
+			'page callback'=>'solrautocomplete',
+			'access arguments'=>array('access content')
+	);
+	
 	return $item;
 }
 
@@ -117,4 +130,32 @@ function delete(){
 	$solr->deleteByQuery("*:*");
 	$solr->commit();
 	drupal_set_message("Document deleted");
+}
+
+function search(){
+	drupal_add_js(drupal_get_path('module','apache_solr').'/solr_autocomplete.js','file');
+	$form = array();
+	$form['index_text'] = array(
+			'#type'=>'textfield',
+			'#attributes'=>array('placholder'=>'Search Text Here'),
+			'#id'=>'solr_text',
+	);
+	return $form;
+}
+
+function solrautocomplete() {
+	$term = $_GET['term'];
+	$options = array
+	(
+			'hostname' => HOST,
+			'port'     => PORT,
+			'path'	   =>'/solr/'.CORE0,
+	);
+	$solr = new SolrClient($options);
+	$query = new SolrQuery('text:'.$term);
+	$query->setStart(0);
+	$query->setRows(10);
+	$query_response = $solr->query($query);
+	$response = $query_response->getResponse();
+	return drupal_json_output($response);
 }

@@ -729,7 +729,7 @@ class Apache_Solr_Service
 	 * @throws Apache_Solr_HttpTransportException If an error occurs during the service call
 	 */
 	public function add($rawPost)
-	{	//print_r($this->_updateUrl."\n".$rawPost);exit();
+	{	print_r($this->_updateUrl."\n".$rawPost);exit();
 		return $this->_sendRawPost($this->_updateUrl, $rawPost);
 	}
 
