@@ -12,8 +12,6 @@ define('HOST', '127.0.0.1');
 define('PORT','8983');
 define('CORE0','core0');
 define('DRUPAL_ROOT', getcwd());
-//include_once DRUPAL_ROOT .'/Apache/Solr/Service.php';
-require_once( DRUPAL_ROOT.'/Apache/Solr/Service.php' );
 /**
  * Implement hook_menu()
  */
@@ -50,79 +48,73 @@ function index_submit($form,&$form_state) {
 	if($value == "update") {
 		update();
 	}
+	if($value == "delete") {
+		delete();
+	}
 }
 function create(){
 	$options = array
 	(
 			'hostname' => HOST,
 			'port'     => PORT,
-			'path'	   =>'/solr/core1'	
+			'path'	   =>'/solr/'.CORE0,	
 	);
 	
-	$client = new SolrClient($options);
-	
-	$doc = new SolrInputDocument();
-	
-	$doc->addField('id', uniqid());
-	$doc->addField('fname', 'shilkiya');
-	
-	$updateResponse = $client->addDocument($doc);
-	
-	// you will have to commit changes to be written if you didn't use $commitWithin
-	$client->commit();
-	
-	print_r($updateResponse->getResponse());
-	
-	
-	/* $solr = new Apache_Solr_Service(HOST,PORT,'/solr/core0');
-	//print_r($solr);exit();
+	$solr = new SolrClient($options);
 	if(!$solr->ping()){
 		drupal_set_message('Server not connected');
 	}
 	else{
 		drupal_set_message('Server connected');
 	}
-	$documents = array();
-	$document = new Apache_Solr_Document();
-	$document->fname = "Umang";
-	$solr->addDocument($document);
-	$solr->commit(true); */
-	//$solr->optimize();
-	//try{
-	//$query = db_query("select * from {user_data}");
-	//print_r($query);exit();
-	/*foreach ($query as $result){
-		$document->id = uniqid();
-		$document->fname = $result->first_name;
-		//$document->lname = $result->last_name;
-		$document->email = $result->email;
-		$document->city  = $result->city;
-		//$document->company=$result->company_name;
-		//$document->country=$result->country;
-		//$document->state = $result->state;
-		$document->zip   = $result->zip;
-		//$document->text  = $result->address;
-		//$document->text  = $result->phone1;
-		//$document->text  = $result->phone2;
-		//print_r($document);exit();
-		 //print_r($solr);exit();
-		$solr->addDocument($document);
+	
+	try{
+		$query = db_query("select * from {user_data}");
+		$docs = array();
+		foreach($query as $result) {
+			$doc = new SolrInputDocument();
+			$doc->addField('id', $result->id);
+			$doc->addField('fname', $result->first_name);
+			$doc->addField('lname',$result->last_name);
+			$doc->addField('eml',$result->email);
+			$doc->addField('city',$result->city);
+			$doc->addField('state',$result->state);
+			$doc->addField('country',$result->country);
+			$doc->addField('zip',$result->zip);
+			$doc->addField('phone',$result->phone1);
+			$doc->addField('text',$result->address);
+			$doc->addField('text',$result->phone2);
+			$doc->addField('text',$result->company_name);
+			array_push($docs,$doc);
+		}
+		$updateResponse = $solr->addDocuments($docs);
 		$solr->commit();
-		$solr->optimize();
-		exit();
-		//$documents[] = $document;
-	}//exit();
-		//print_r($documents);exit();
-	//$solr->addDocuments($documents);
-	//$solr->commit();
-	//$solr->optimize();
-	drupal_set_message("Create Index successfully");
+		drupal_set_message("Index created");
 	}
 	catch (Exception $e) {
 		drupal_set_message($e->getMessage(),'error');
-	}*/
+	}
 }
 
 function update(){
 	drupal_set_message("Update Index successfully");
+}
+function delete(){
+	$options = array
+	(
+			'hostname' => HOST,
+			'port'     => PORT,
+			'path'	   =>'/solr/'.CORE0,
+	);
+	
+	$solr = new SolrClient($options);
+	if(!$solr->ping()){
+		drupal_set_message('Server not connected');
+	}
+	else{
+		drupal_set_message('Server connected');
+	}
+	$solr->deleteByQuery("*:*");
+	$solr->commit();
+	drupal_set_message("Document deleted");
 }
