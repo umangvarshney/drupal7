@@ -9,7 +9,7 @@
  * @method index
  */
 define('HOST', '127.0.0.1');
-define('PORT','8983');
+define('PORT','8984');
 define('CORE0','core0');
 define('DRUPAL_ROOT', getcwd());
 /**
@@ -22,19 +22,22 @@ function apache_solr_menu() {
 			'description'=>t('Solr indexing'),
 			'page callback'=>'drupal_get_form',
 			'page arguments'=>array('index'),
-			'access arguments'=>array('access administration pages')
+			'access arguments'=>array('access administration pages'),
+			'type'=>MENU_CALLBACK,
 	);
 	$item['solr/search'] = array(
 			'title'=>t('Solr Search'),
 			'description'=>t('Solr Searching'),
 			'page callback'=>'drupal_get_form',
 			'page arguments'=>array('search'),
-			'access arguments'=>array('access content')
+			'access arguments'=>array('access content'),
+			'type'=>MENU_CALLBACK,
 	);
 	
 	$item['solr/callback/autocomplete'] = array(
 			'page callback'=>'solrautocomplete',
-			'access arguments'=>array('access content')
+			'access arguments'=>array('access content'),
+			'type'=>MENU_CALLBACK,
 	);
 	
 	return $item;
@@ -89,15 +92,15 @@ function create(){
 			$doc->addField('id', $result->id);
 			$doc->addField('fname', $result->first_name);
 			$doc->addField('lname',$result->last_name);
-			$doc->addField('eml',$result->email);
+			$doc->addField('email',$result->email);
 			$doc->addField('city',$result->city);
 			$doc->addField('state',$result->state);
 			$doc->addField('country',$result->country);
 			$doc->addField('zip',$result->zip);
-			$doc->addField('phone',$result->phone1);
+			$doc->addField('text',$result->phone1);
 			$doc->addField('text',$result->address);
 			$doc->addField('text',$result->phone2);
-			$doc->addField('text',$result->company_name);
+			$doc->addField('company',$result->company_name);
 			array_push($docs,$doc);
 		}
 		$updateResponse = $solr->addDocuments($docs);
@@ -133,18 +136,19 @@ function delete(){
 }
 
 function search(){
-	drupal_add_js(drupal_get_path('module','apache_solr').'/solr_autocomplete.js','file');
+	//drupal_add_js(drupal_get_path('module','apache_solr').'/solr_autocomplete.js','file');
 	$form = array();
 	$form['index_text'] = array(
 			'#type'=>'textfield',
 			'#attributes'=>array('placholder'=>'Search Text Here'),
 			'#id'=>'solr_text',
+			'#autocomplete_path'=>'solr/callback/autocomplete',
 	);
 	return $form;
 }
 
-function solrautocomplete() {
-	$term = $_GET['term'];
+function solrautocomplete($text) {
+	$term = $text;//$_GET['term'];
 	$options = array
 	(
 			'hostname' => HOST,
@@ -152,10 +156,17 @@ function solrautocomplete() {
 			'path'	   =>'/solr/'.CORE0,
 	);
 	$solr = new SolrClient($options);
-	$query = new SolrQuery('text:'.$term);
-	$query->setStart(0);
-	$query->setRows(10);
-	$query_response = $solr->query($query);
+	$solr->setServlet(SolrClient::SEARCH_SERVLET_TYPE,'spell');
+	$solrQuery = new SolrQuery();
+	$solrQuery->set('spellcheck','true');
+	$solrQuery->setQuery($term);
+	$query_response = $solr->query($solrQuery);
 	$response = $query_response->getResponse();
-	return drupal_json_output($response);
+	$result = $response->spellcheck->suggestions->$term->suggestion;
+	//print_r($response->spellcheck->suggestions->$term->suggestion);
+	$array = array();
+	foreach ($result as $key => $value) {
+		$array[$value->word] = $value->word;
+	}
+	return drupal_json_output($array);
 }
